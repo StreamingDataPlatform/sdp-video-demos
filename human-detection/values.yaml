@@ -1,0 +1,10 @@
+images:
+  rtspSimulator:
+    repository: "devops-repo.isus.emc.com:8116/nautilus/video-demos/rtsp-simulator:latest"
+    pullPolicy: "Always"
+
+global:
+  camera:
+    rtspPort: 8554
+    videos: "/opt/videos/3660928.mp4;30;cam1,/opt/videos/test4.mp4;24;cam2"
+    
