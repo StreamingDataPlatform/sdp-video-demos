@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-rtsp-simulator
+  labels: 
+    release: {{ $.Release.Name }}-rtsp-simulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      release: {{ $.Release.Name }}-rtsp-simulator
+  template:
+    metadata:
+      labels:
+        release: {{ $.Release.Name }}-rtsp-simulator
+    spec:
+      containers:
+      - name: rtsp-camera-simulator
+        image: {{ $.Values.images.rtspSimulator.repository | quote }}
+        imagePullPolicy: {{ $.Values.images.rtspSimulator.pullPolicy | quote }}
+        ports:
+        - name: rtsp
+          containerPort: {{ $.Values.global.camera.rtspPort }}
+          protocol: TCP
+        env:
+        - name: VIDEOS
+          value: {{ $.Values.global.camera.videos }}
