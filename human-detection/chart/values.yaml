@@ -2,7 +2,9 @@ images:
   rtspSimulator:
     repository: "devops-repo.isus.emc.com:8116/nautilus/video-demos/rtsp-simulator:latest"
     pullPolicy: "Always"
-
+  grafana:
+    repository: "devops-repo.isus.emc.com:8116/nautilus/video-demos/grafana:latest"
+    pullPolicy: "Always"
 global:
   camera:
     rtspPort: 8554

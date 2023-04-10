@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-grafana
+  labels:
+    release: {{ $.Release.Name }}-grafana
+spec:
+  selector:
+    matchLabels:
+      release: {{ $.Release.Name }}-grafana
+  template:
+    metadata:
+      labels:
+        release: {{ $.Release.Name }}-grafana
+    spec:
+      containers:
+      - name: grafana
+        image: {{ $.Values.images.grafana.repository | quote }}
+        imagePullPolicy: {{ $.Values.images.grafana.pullPolicy | quote }}
+        ports:
+        - name: grafana
+          containerPort: 3000
+          protocol: TCP
