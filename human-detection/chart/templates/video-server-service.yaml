@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-video-server
+  annotations:
+    nautilus.dellemc.com/http-ingress: hls
+    nautilus.dellemc.com/http-ingress-name: {{ $.Release.Name }}-video-server
+spec:
+  ports:
+  - name: hls
+    port: 3030
+    targetPort: gstreamer
+    protocol: TCP
+  selector:
+    gstreamer.dellemc.com/pravega-video-server: video
+  type: ClusterIP
