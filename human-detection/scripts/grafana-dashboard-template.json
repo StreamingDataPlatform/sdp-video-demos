@@ -1,0 +1,865 @@
+{
+  "dashboard":
+  {
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "id": null,
+    "iteration": 1676892485012,
+    "links": [],
+    "panels": [
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 23,
+          "w": 8,
+          "x": 0,
+          "y": 0
+        },
+        "id": 2,
+        "options": {
+          "cameras": "cameras_selected",
+          "hoverPanel": "Human Detection",
+          "inferSuffix": "-infer",
+          "showLiveStream": true,
+          "stream": "abc",
+          "streams": "cameras",
+          "videoServerUri": "%{protocol}%://%{video_server_uri}%"
+        },
+        "pluginVersion": "7.5.17",
+        "targets": [
+          {
+            "groupBy": [
+              {
+                "params": [
+                  "$__interval"
+                ],
+                "type": "time"
+              },
+              {
+                "params": [
+                  "null"
+                ],
+                "type": "fill"
+              }
+            ],
+            "orderByTime": "ASC",
+            "policy": "default",
+            "refId": "A",
+            "resultFormat": "time_series",
+            "select": [
+              [
+                {
+                  "params": [
+                    "value"
+                  ],
+                  "type": "field"
+                },
+                {
+                  "params": [],
+                  "type": "mean"
+                }
+              ]
+            ],
+            "tags": []
+          }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Realtime Monitoring",
+        "type": "dellemc-pravegavideoplayer-panel"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "human.mean"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "${cameras:text}"
+                }
+              ]
+            }
+          ]
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 11,
+          "w": 16,
+          "x": 8,
+          "y": 0
+        },
+        "hiddenSeries": false,
+        "id": 4,
+        "legend": {
+          "alignAsTable": false,
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "rightSide": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.17",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "$tag_camera",
+            "groupBy": [
+              {
+                "params": [
+                  "1s"
+                ],
+                "type": "time"
+              },
+              {
+                "params": [
+                  "camera"
+                ],
+                "type": "tag"
+              },
+              {
+                "params": [
+                  "null"
+                ],
+                "type": "fill"
+              }
+            ],
+            "measurement": "human",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "query": "from(bucket: \"test\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"queue\" and\n    r._field == \"length\" and\n    r.camera == \"${cameras:text}\"\n  )",
+            "queryType": "randomWalk",
+            "refId": "A",
+            "resultFormat": "time_series",
+            "select": [
+              [
+                {
+                  "params": [
+                    "count"
+                  ],
+                  "type": "field"
+                },
+                {
+                  "params": [],
+                  "type": "mean"
+                }
+              ]
+            ],
+            "tags": [
+              {
+                "key": "camera",
+                "operator": "=~",
+                "value": "/^${cameras_selected:raw}$/"
+              }
+            ]
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Computer vision-based Human Detection",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:134",
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:135",
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 12,
+          "w": 16,
+          "x": 8,
+          "y": 11
+        },
+        "id": 6,
+        "options": {
+          "cameras": "cameras_selected",
+          "hoverPanel": "Human Detection",
+          "inferSuffix": "-infer",
+          "showLiveStream": false,
+          "streams": "cameras",
+          "videoServerUri": "%{protocol}%://%{video_server_uri}%"
+        },
+        "pluginVersion": "7.5.17",
+        "targets": [
+          {
+            "groupBy": [
+              {
+                "params": [
+                  "$__interval"
+                ],
+                "type": "time"
+              },
+              {
+                "params": [
+                  "null"
+                ],
+                "type": "fill"
+              }
+            ],
+            "orderByTime": "ASC",
+            "policy": "default",
+            "refId": "A",
+            "resultFormat": "time_series",
+            "select": [
+              [
+                {
+                  "params": [
+                    "value"
+                  ],
+                  "type": "field"
+                },
+                {
+                  "params": [],
+                  "type": "mean"
+                }
+              ]
+            ],
+            "tags": []
+          }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Selected Clips",
+        "type": "dellemc-pravegavideoplayer-panel"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 8,
+          "x": 0,
+          "y": 23
+        },
+        "id": 10,
+        "maxPerRow": 2,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": true
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "7.5.17",
+        "repeat": "cameras",
+        "repeatDirection": "v",
+        "scopedVars": {
+          "cameras": {
+            "selected": true,
+            "text": "cam1",
+            "value": "%{namespace}%/camera1"
+          }
+        },
+        "targets": [
+          {
+            "alias": "Current Hour",
+            "groupBy": [
+              {
+                "params": [
+                  "camera"
+                ],
+                "type": "tag"
+              }
+            ],
+            "measurement": "human",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "query": "SELECT mean(\"count\") AS \"Per Hour\" FROM \"human\" WHERE (\"camera\" =~ /^${cameras:text}$/ AND \"time\" >= (now() - 1h)) GROUP BY \"camera\" fill(null)",
+            "rawQuery": true,
+            "refId": "A",
+            "resultFormat": "time_series",
+            "select": [
+              [
+                {
+                  "params": [
+                    "count"
+                  ],
+                  "type": "field"
+                },
+                {
+                  "params": [
+                    "Per Hour"
+                  ],
+                  "type": "alias"
+                }
+              ]
+            ],
+            "tags": [
+              {
+                "key": "camera",
+                "operator": "=~",
+                "value": "/^${cameras_selected:raw}$/"
+              },
+              {
+                "condition": "AND",
+                "key": "time",
+                "operator": ">",
+                "value": "(now() - 1h)"
+              }
+            ]
+          },
+          {
+            "alias": "Peak Hour",
+            "groupBy": [
+              {
+                "params": [
+                  "1d"
+                ],
+                "type": "time"
+              },
+              {
+                "params": [
+                  "camera"
+                ],
+                "type": "tag"
+              },
+              {
+                "params": [
+                  "null"
+                ],
+                "type": "fill"
+              }
+            ],
+            "hide": false,
+            "measurement": "human",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "query": "select max(\"Per Day\") from (SELECT mean(\"count\") AS \"Per Day\" FROM \"human\" WHERE (\"camera\" =~ /^${cameras:text}$/ AND \"time\" >= (now() - 1d))  GROUP BY time(1h), \"camera\" fill(null)) GROUP BY \"camera\"",
+            "rawQuery": true,
+            "refId": "B",
+            "resultFormat": "time_series",
+            "select": [
+              [
+                {
+                  "params": [
+                    "count"
+                  ],
+                  "type": "field"
+                },
+                {
+                  "params": [],
+                  "type": "max"
+                },
+                {
+                  "params": [
+                    "Per Day"
+                  ],
+                  "type": "alias"
+                }
+              ]
+            ],
+            "tags": [
+              {
+                "key": "camera",
+                "operator": "=~",
+                "value": "/^${cameras_selected:raw}$/"
+              },
+              {
+                "condition": "AND",
+                "key": "time",
+                "operator": ">",
+                "value": "(now() - 1d)"
+              }
+            ]
+          }
+        ],
+        "timeFrom": "1d",
+        "title": "$cameras # of human",
+        "transformations": [],
+        "type": "stat"
+      },
+      {
+        "aliasColors": {},
+        "bars": true,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 6,
+          "w": 16,
+          "x": 8,
+          "y": 23
+        },
+        "hiddenSeries": false,
+        "id": 8,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": false,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.17",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "alias": "$tag_camera",
+            "groupBy": [
+              {
+                "params": [
+                  "1h"
+                ],
+                "type": "time"
+              },
+              {
+                "params": [
+                  "camera"
+                ],
+                "type": "tag"
+              },
+              {
+                "params": [
+                  "null"
+                ],
+                "type": "fill"
+              }
+            ],
+            "measurement": "human",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "refId": "A",
+            "resultFormat": "time_series",
+            "select": [
+              [
+                {
+                  "params": [
+                    "count"
+                  ],
+                  "type": "field"
+                },
+                {
+                  "params": [],
+                  "type": "mean"
+                }
+              ]
+            ],
+            "tags": [
+              {
+                "key": "camera",
+                "operator": "=~",
+                "value": "/^${cameras_selected:raw}$/"
+              }
+            ]
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": "1d",
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Avg # of Human Over Time",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:96",
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:97",
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 3,
+          "w": 8,
+          "x": 0,
+          "y": 26
+        },
+        "id": 11,
+        "maxPerRow": 2,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": true
+          },
+          "text": {},
+          "textMode": "auto"
+        },
+        "pluginVersion": "7.5.17",
+        "repeatDirection": "v",
+        "repeatIteration": 1676905728852,
+        "repeatPanelId": 10,
+        "scopedVars": {
+          "cameras": {
+            "selected": true,
+            "text": "cam2",
+            "value": "%{namespace}%/camera2"
+          }
+        },
+        "targets": [
+          {
+            "alias": "Current Hour",
+            "groupBy": [
+              {
+                "params": [
+                  "camera"
+                ],
+                "type": "tag"
+              }
+            ],
+            "measurement": "human",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "query": "SELECT mean(\"count\") AS \"Per Hour\" FROM \"human\" WHERE (\"camera\" =~ /^${cameras:text}$/ AND \"time\" >= (now() - 1h)) GROUP BY \"camera\" fill(null)",
+            "rawQuery": true,
+            "refId": "A",
+            "resultFormat": "time_series",
+            "select": [
+              [
+                {
+                  "params": [
+                    "count"
+                  ],
+                  "type": "field"
+                },
+                {
+                  "params": [
+                    "Per Hour"
+                  ],
+                  "type": "alias"
+                }
+              ]
+            ],
+            "tags": [
+              {
+                "key": "camera",
+                "operator": "=~",
+                "value": "/^${cameras_selected:raw}$/"
+              },
+              {
+                "condition": "AND",
+                "key": "time",
+                "operator": ">",
+                "value": "(now() - 1h)"
+              }
+            ]
+          },
+          {
+            "alias": "Peak Hour",
+            "groupBy": [
+              {
+                "params": [
+                  "1d"
+                ],
+                "type": "time"
+              },
+              {
+                "params": [
+                  "camera"
+                ],
+                "type": "tag"
+              },
+              {
+                "params": [
+                  "null"
+                ],
+                "type": "fill"
+              }
+            ],
+            "hide": false,
+            "measurement": "human",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "query": "select max(\"Per Day\") from (SELECT mean(\"count\") AS \"Per Day\" FROM \"human\" WHERE (\"camera\" =~ /^${cameras:text}$/ AND \"time\" >= (now() - 1d))  GROUP BY time(1h), \"camera\" fill(null)) GROUP BY \"camera\"",
+            "rawQuery": true,
+            "refId": "B",
+            "resultFormat": "time_series",
+            "select": [
+              [
+                {
+                  "params": [
+                    "count"
+                  ],
+                  "type": "field"
+                },
+                {
+                  "params": [],
+                  "type": "max"
+                },
+                {
+                  "params": [
+                    "Per Day"
+                  ],
+                  "type": "alias"
+                }
+              ]
+            ],
+            "tags": [
+              {
+                "key": "camera",
+                "operator": "=~",
+                "value": "/^${cameras_selected:raw}$/"
+              },
+              {
+                "condition": "AND",
+                "key": "time",
+                "operator": ">",
+                "value": "(now() - 1d)"
+              }
+            ]
+          }
+        ],
+        "timeFrom": "1d",
+        "title": "$cameras # of human",
+        "transformations": [],
+        "type": "stat"
+      }
+    ],
+    "refresh": false,
+    "schemaVersion": 27,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "allValue": null,
+          "current": {
+            "selected": false,
+            "text": [
+              "cam1",
+              "cam2"
+            ],
+            "value": [
+              "%{namespace}%/camera1",
+              "%{namespace}%/camera2"
+            ]
+          },
+          "description": null,
+          "error": null,
+          "hide": 0,
+          "includeAll": false,
+          "label": "Cameras",
+          "multi": true,
+          "name": "cameras",
+          "options": [
+            {
+              "selected": true,
+              "text": "cam1",
+              "value": "%{namespace}%/camera1"
+            },
+            {
+              "selected": true,
+              "text": "cam2",
+              "value": "%{namespace}%/camera2"
+            }
+          ],
+          "query": "cam1 : %{namespace}%/camera1, cam2 : %{namespace}%/camera2",
+          "queryValue": "",
+          "skipUrlSync": false,
+          "type": "custom"
+        },
+        {
+          "description": null,
+          "error": null,
+          "hide": 2,
+          "label": null,
+          "name": "cameras_selected",
+          "query": "(cam1|cam2)",
+          "skipUrlSync": false,
+          "type": "constant"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-15m",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "human-detection",
+    "uid": "0GziVshVk",
+    "version": 18
+  }
+  ,
+  "overwrite": false
+}
