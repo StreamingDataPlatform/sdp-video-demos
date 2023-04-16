@@ -1,6 +1,0 @@
-demo_namespace = 'inference-demos'
-demo_release_name = 'human-detection'
-influxdb_database = 'foit'
-protocol = 'https'
-grafana_dashboard_template = 'grafana-dashboard-template.json'
-grafana_dashboard = 'grafana-dashboard.json'
