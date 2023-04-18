@@ -160,8 +160,8 @@ if __name__ == '__main__':
     print("\nDone------------------------------------------------------------------")
 
     print("\n[Values for deployement in UI]")
-    print(f"Camera Recorder Host: {project_release_name}-rtsp-simulator.{project_namespace}.svc.cluster.local")
-    print(f"InfluxDB Host: project-metrics.{project_release_name}.svc.cluster.local")
+    print(f"Simulated Camera Address: {project_release_name}-rtsp-simulator.{project_namespace}.svc.cluster.local")
+    print(f"InfluxDB Host: project-metrics.{project_namespace}.svc.cluster.local")
     print(f"InfluxDB Username: {influxdb_username}")
     print(f"InfluxDB Password: {influxdb_password}")
     print("\n[Access Grafana Dashboard]")
