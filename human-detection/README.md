@@ -8,11 +8,11 @@ Install charts and set up Grafana using
 ```
 $ ./install.sh
 ```
-After finish install, setup camera and inference pipeline in SDP Project UI.
+After finish install, setup camera recorder and inference pipeline in SDP Project UI.
 ### Create Camera Secret
-All camera connected through rtsp requires secret. Install script deployed two simulated cameras with secret `admin@password`.
+RTSP cameras usually have basic auth enabled. Install script deployed simulated RTSP camera with the username-password pair of `admin:password`. In SDP, the camera recorder pipeline would read the secret which stores the username and password for auth.
 
-Make sure secret `admin-secret` exists `Video - Camera Secrets`.
+In SDP, make sure secret `admin-secret` exists in `Video - Camera Secrets`.
 
 ### Create Camera Recorder Pipeline
 | Field                  | Value                                                        |
