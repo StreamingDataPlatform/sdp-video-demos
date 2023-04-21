@@ -5,6 +5,8 @@ images:
   grafana:
     repository: "devops-repo.isus.emc.com:8116/nautilus/video-demos/grafana:latest"
     pullPolicy: "Always"
+stageTags:
+  stage1: false
 global:
   camera:
     rtspPort: 8554
