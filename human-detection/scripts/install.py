@@ -82,9 +82,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     config = utils.Config.from_file(args.config)
 
-    print(f"[Install to Project {config.project}]\n")
+    print(f"[Install to Project {config.project}]")
 
-    print("[Install SDP Project, Simulated Cameras, Metrics services]")
+    print("\n[Install SDP Project, Simulated Cameras, Metrics services]")
     # create namespace if not exists
     utils.run_command("kubectl get namespace |" +
                       f" grep -q \"^{config.project}\" ||" +
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     wait_until_host_resolvable(
         utils.get_k8s_ingress_host("video", config.project))
 
-    print("[Install Camera Recorder Pipelines]")
+    print("\n[Install Camera Recorder Pipelines]")
     utils.run_command("helm upgrade --install human-detection ./chart" +
                       f" -n {config.project}" +
                       " --set stageTags.stage1=true" +
@@ -106,9 +106,9 @@ if __name__ == '__main__':
     wait_until_camera_recorder_running("camera-recorder-1", config.project)
     wait_until_camera_recorder_running("camera-recorder-2", config.project)
 
-    print("[Install GStreamer Pipelines]")
+    print("\n[Install GStreamer Pipelines]")
     influxdb_host, ingress_port = utils.get_k8s_service_local_address("project-metrics",
-                                                       config.project)
+                                                                      config.project)
     influxdb_username, influxdb_password = utils.get_influxdb_creds('project-metrics-influxdb',
                                                                     config.project)
     utils.run_command("helm upgrade --install human-detection ./chart" +
@@ -122,15 +122,15 @@ if __name__ == '__main__':
     wait_until_gstreamer_pipeline_running("human-detection-1", config.project)
     wait_until_gstreamer_pipeline_running("human-detection-2", config.project)
 
-    print("[Add Grafana data source]")
+    print("\n[Add Grafana data source]")
     grafana_uri = utils.get_k8s_ingress_host(f"{config.release_name}-grafana",
                                              config.project)
     wait_until_host_resolvable(grafana_uri)
-    influxdb_uri=f"{influxdb_host}:{ingress_port}"
+    influxdb_uri = f"{influxdb_host}:{ingress_port}"
     create_grafana_datasource(config.metrics_protocol, grafana_uri, influxdb_uri,
                               "video_demo_db", influxdb_username, influxdb_password)
 
-    print("[Create Grafana dashboard]")
+    print("\n[Create Grafana dashboard]")
     video_server_uri = utils.get_k8s_ingress_host(f"{config.release_name}-video-server",
                                                   config.project)
     wait_until_host_resolvable(video_server_uri)

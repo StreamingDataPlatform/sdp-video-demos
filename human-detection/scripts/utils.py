@@ -9,6 +9,7 @@ import socket
 import re
 import time
 
+
 class Config:
     def __init__(self, project, release_name, metrics_protocol, grafana_template, grafana_output):
         self.project = project
@@ -81,12 +82,14 @@ def is_host_resolvable(hostname):
     except socket.gaierror:
         return False
 
+
 def wait_until_condition_met(condition_check, display_name, wait_time=5):
     print(f"Waiting {display_name}...", end="")
     while not condition_check():
         print(".", end="", flush=True)
         time.sleep(wait_time)
     print("")
+
 
 def generate_file_from_template(template_file, output_file, variable_map):
     pattern = re.compile(r'%\{(.+?)\}%')
