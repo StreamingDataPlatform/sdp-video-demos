@@ -5,29 +5,28 @@ import json
 
 
 def wait_until_host_resolvable(host):
-    print(f"Waiting {host}...\n...", end="")
-    while not utils.is_host_resolvable(host):
-        print(".", end="", flush=True)
-        time.sleep(5)
-    print("")
+    def condition_check(): return utils.is_host_resolvable(host)
+    utils.wait_until_condition_met(condition_check, host)
 
 
 def wait_until_project_ready(project):
-    print(f"Waiting project {project}...\n...", end="")
-    while not utils.is_k8s_resource_in_state("projects.nautilus.dellemc.com",
-                                             project, project, "{.status.status}", "Ready"):
-        print(".", end="", flush=True)
-        time.sleep(5)
-    print("")
+    def condition_check(): return utils.is_k8s_resource_in_state("projects.nautilus.dellemc.com",
+                                                                 project, project, "{.status.status}", "Ready")
+    utils.wait_until_condition_met(condition_check, f"project {project}")
 
 
 def wait_until_camera_recorder_running(camera_recorder, namespace):
-    print(f"Waiting camera recorder {camera_recorder}...\n...", end="")
-    while not utils.is_k8s_resource_in_state("CameraRecorderPipeline",
-                                             camera_recorder, namespace, "{.status.state}", "Running"):
-        print(".", end="", flush=True)
-        time.sleep(3)
-    print("")
+    def condition_check(): return utils.is_k8s_resource_in_state("CameraRecorderPipeline",
+                                                                 camera_recorder, namespace, "{.status.state}", "Running")
+    utils.wait_until_condition_met(
+        condition_check, f"camera recorder {camera_recorder}", wait_time=3)
+
+
+def wait_until_gstreamer_pipeline_running(gstreamer_pipeline, namespace):
+    def condition_check(): return utils.is_k8s_resource_in_state("GStreamerPipeline",
+                                                                 gstreamer_pipeline, namespace, "{.status.state}", "Running")
+    utils.wait_until_condition_met(
+        condition_check, f"gstreamer pipeline {gstreamer_pipeline}", wait_time=3)
 
 
 def create_grafana_datasource(protocol, grafana_uri, influxdb_uri, influxdb_database, influxdb_username, influxdb_password):
@@ -93,37 +92,48 @@ if __name__ == '__main__':
     # install stage1
     utils.run_command("helm upgrade --install human-detection ./chart" +
                       f" -n {config.project}" +
-                      " --set stageTags.stage1=true" + 
-                      " --set stageTags.stage2=false")
+                      " --set stageTags.stage1=true")
     wait_until_project_ready(config.project)
+    # make sure video server is ready for playbacks in sdp
+    wait_until_host_resolvable(
+        utils.get_k8s_ingress_host("video", config.project))
 
     print("[Install Camera Recorder Pipelines]")
     utils.run_command("helm upgrade --install human-detection ./chart" +
                       f" -n {config.project}" +
-                      " --set stageTags.stage1=true" + 
+                      " --set stageTags.stage1=true" +
                       " --set stageTags.stage2=true")
     wait_until_camera_recorder_running("camera-recorder-1", config.project)
     wait_until_camera_recorder_running("camera-recorder-2", config.project)
 
-    print("[TODO Install GStreamer Pipelines]")
-
-    print("[Wait until Grafana/Video Server ready]")
-    grafana_uri = utils.get_k8s_ingress_host(f"{config.release_name}-grafana",
-                                         config.project)
-    video_server_uri = utils.get_k8s_ingress_host(f"{config.release_name}-video-server",
-                                              config.project)
-    wait_until_host_resolvable(grafana_uri)
-    wait_until_host_resolvable(video_server_uri)
-
-    print("[Add Grafana data source]")
+    print("[Install GStreamer Pipelines]")
+    influxdb_host, ingress_port = utils.get_k8s_service_local_address("project-metrics",
+                                                       config.project)
     influxdb_username, influxdb_password = utils.get_influxdb_creds('project-metrics-influxdb',
                                                                     config.project)
-    influxdb_uri = utils.get_k8s_service_local_address("project-metrics",
-                                                           config.project)
+    utils.run_command("helm upgrade --install human-detection ./chart" +
+                      f" -n {config.project}" +
+                      " --set stageTags.stage1=true" +
+                      " --set stageTags.stage2=true" +
+                      " --set stageTags.stage3=true" +
+                      f" --set global.influxdb.host={influxdb_host}" +
+                      f" --set global.influxdb.username={influxdb_username}" +
+                      f" --set global.influxdb.password={influxdb_password}")
+    wait_until_gstreamer_pipeline_running("human-detection-1", config.project)
+    wait_until_gstreamer_pipeline_running("human-detection-2", config.project)
+
+    print("[Add Grafana data source]")
+    grafana_uri = utils.get_k8s_ingress_host(f"{config.release_name}-grafana",
+                                             config.project)
+    wait_until_host_resolvable(grafana_uri)
+    influxdb_uri=f"{influxdb_host}:{ingress_port}"
     create_grafana_datasource(config.metrics_protocol, grafana_uri, influxdb_uri,
                               "video_demo_db", influxdb_username, influxdb_password)
 
     print("[Create Grafana dashboard]")
+    video_server_uri = utils.get_k8s_ingress_host(f"{config.release_name}-video-server",
+                                                  config.project)
+    wait_until_host_resolvable(video_server_uri)
     grafana_variable_map = {
         'video_server_uri': video_server_uri,
         'namespace': config.project,

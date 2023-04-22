@@ -7,7 +7,7 @@ import json
 import subprocess
 import socket
 import re
-
+import time
 
 class Config:
     def __init__(self, project, release_name, metrics_protocol, grafana_template, grafana_output):
@@ -36,7 +36,7 @@ class Config:
         )
 
 
-def run_command(command, print_command=False):
+def run_command(command, print_command=True):
     if print_command:
         print(f"$ {command}")
     result = subprocess.run(
@@ -56,7 +56,7 @@ def get_influxdb_creds(influxdb_name, namespace):
 
 def is_k8s_resource_in_state(resource, resource_name, namespace, state_jsonpath, expected_value):
     command = f"kubectl get {resource} {resource_name} -n {namespace} -o jsonpath='{state_jsonpath}\n'"
-    result = run_command(command)
+    result = run_command(command, print_command=False)
     return result.stdout.strip() == expected_value
 
 
@@ -70,8 +70,8 @@ def get_k8s_service_local_address(service_name, namespace):
     command = f"kubectl get svc {service_name} -n {namespace} -o jsonpath='{{.spec.ports[0].port}}'"
     result = run_command(command)
     port = result.stdout.strip()
-    local_address = f"{service_name}.{namespace}.svc.cluster.local:{port}"
-    return local_address
+    host = f"{service_name}.{namespace}.svc.cluster.local"
+    return host, port
 
 
 def is_host_resolvable(hostname):
@@ -81,6 +81,12 @@ def is_host_resolvable(hostname):
     except socket.gaierror:
         return False
 
+def wait_until_condition_met(condition_check, display_name, wait_time=5):
+    print(f"Waiting {display_name}...", end="")
+    while not condition_check():
+        print(".", end="", flush=True)
+        time.sleep(wait_time)
+    print("")
 
 def generate_file_from_template(template_file, output_file, variable_map):
     pattern = re.compile(r'%\{(.+?)\}%')

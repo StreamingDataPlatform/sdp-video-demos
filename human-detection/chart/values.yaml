@@ -8,6 +8,7 @@ images:
 stageTags:
   stage1: false
   stage2: false
+  stage3: false
 global:
   rtspSimulator:
     port: 8554
@@ -22,7 +23,7 @@ global:
     path2: "/cam2"
     stream2: "camera2"
   influxdb:
-    host: "project-metrics.{{ $.Release.Namespace }}.svc.cluster.local"
-    username: video_demo_db
+    host: null
+    username: null
     password: null
-    database: null
+    database: video_demo_db
