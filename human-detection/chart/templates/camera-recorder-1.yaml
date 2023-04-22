@@ -1,0 +1,21 @@
+{{- if .Values.stageTags.stage2 }}
+apiVersion: gstreamer.dellemc.com/v1alpha1
+kind: CameraRecorderPipeline
+metadata:
+  name: camera-recorder-1
+spec:
+  state: Running
+  camera:
+    address: "{{ $.Release.Name }}-rtsp-simulator.{{ $.Release.Namespace }}.svc.cluster.local"
+    path: {{ .Values.global.recorderPipeline.path1 | quote }}
+    port: {{ .Values.global.rtspSimulator.port | quote }}
+    secret: {{ .Values.global.rtspSimulator.secret.name | quote }}
+  pravega:
+    stream: {{ .Values.global.recorderPipeline.stream1 | quote }}
+    retentionPolicy:
+      retentionPolicyType: "days"
+      retentionDays: 3
+  env:
+   - name: CAMERA_PROTOCOLS 
+     value: "tcp"
+{{- end}}

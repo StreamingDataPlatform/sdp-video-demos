@@ -7,11 +7,22 @@ images:
     pullPolicy: "Always"
 stageTags:
   stage1: false
+  stage2: false
 global:
-  camera:
-    rtspPort: 8554
+  rtspSimulator:
+    port: 8554
     videos: "/opt/videos/3660928.mp4;30;cam1,/opt/videos/test4.mp4;24;cam2"
     secret:
-      name: "admin-secret"
+      name: "simulator-secret"
       username: "admin"
       password: "password"
+  recorderPipeline:
+    path1: "/cam1"
+    stream1: "camera1"
+    path2: "/cam2"
+    stream2: "camera2"
+  influxdb:
+    host: "project-metrics.{{ $.Release.Namespace }}.svc.cluster.local"
+    username: video_demo_db
+    password: null
+    database: null

@@ -6,8 +6,8 @@ metadata:
 spec:
   ports:
   - name: rtsp
-    port: {{ $.Values.global.camera.rtspPort }}
-    targetPort: {{ $.Values.global.camera.rtspPort }}
+    port: {{ $.Values.global.rtspSimulator.port }}
+    targetPort: {{ $.Values.global.rtspSimulator.port }}
     protocol: TCP
   selector:
     release: {{ $.Release.Name }}-rtsp-simulator

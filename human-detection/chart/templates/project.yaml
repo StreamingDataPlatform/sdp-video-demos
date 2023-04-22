@@ -1,0 +1,21 @@
+{{- if .Values.stageTags.stage1 }}
+apiVersion: nautilus.dellemc.com/v1alpha1
+kind: Project
+metadata:
+  name: {{ $.Release.Namespace }}
+spec:
+  features:
+    - name: pravegavideoserver
+    - name: metrics
+  metrics:
+    enabled: false
+  storage:
+    persistentVolumeClaim:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 20Gi
+      storageClassName: nfs
+    reclaimPolicy: Delete
+{{- end}}

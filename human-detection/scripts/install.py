@@ -13,11 +13,20 @@ def wait_until_host_resolvable(host):
 
 
 def wait_until_project_ready(project):
-    print(f"Waiting {project}...\n...", end="")
+    print(f"Waiting project {project}...\n...", end="")
     while not utils.is_k8s_resource_in_state("projects.nautilus.dellemc.com",
                                              project, project, "{.status.status}", "Ready"):
         print(".", end="", flush=True)
         time.sleep(5)
+    print("")
+
+
+def wait_until_camera_recorder_running(camera_recorder, namespace):
+    print(f"Waiting camera recorder {camera_recorder}...\n...", end="")
+    while not utils.is_k8s_resource_in_state("CameraRecorderPipeline",
+                                             camera_recorder, namespace, "{.status.state}", "Running"):
+        print(".", end="", flush=True)
+        time.sleep(3)
     print("")
 
 
@@ -84,10 +93,17 @@ if __name__ == '__main__':
     # install stage1
     utils.run_command("helm upgrade --install human-detection ./chart" +
                       f" -n {config.project}" +
-                      " --set stageTags.stage1=true")
+                      " --set stageTags.stage1=true" + 
+                      " --set stageTags.stage2=false")
     wait_until_project_ready(config.project)
 
-    print("[TODO Install Camera Recorder Pipelines]")
+    print("[Install Camera Recorder Pipelines]")
+    utils.run_command("helm upgrade --install human-detection ./chart" +
+                      f" -n {config.project}" +
+                      " --set stageTags.stage1=true" + 
+                      " --set stageTags.stage2=true")
+    wait_until_camera_recorder_running("camera-recorder-1", config.project)
+    wait_until_camera_recorder_running("camera-recorder-2", config.project)
 
     print("[TODO Install GStreamer Pipelines]")
 
@@ -105,7 +121,7 @@ if __name__ == '__main__':
     influxdb_uri = utils.get_k8s_service_local_address("project-metrics",
                                                            config.project)
     create_grafana_datasource(config.metrics_protocol, grafana_uri, influxdb_uri,
-                              config.influxdb_database, influxdb_username, influxdb_password)
+                              "video_demo_db", influxdb_username, influxdb_password)
 
     print("[Create Grafana dashboard]")
     grafana_variable_map = {

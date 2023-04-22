@@ -10,11 +10,10 @@ import re
 
 
 class Config:
-    def __init__(self, project, release_name, metrics_protocol, influxdb_database, grafana_template, grafana_output):
+    def __init__(self, project, release_name, metrics_protocol, grafana_template, grafana_output):
         self.project = project
         self.release_name = release_name
         self.metrics_protocol = metrics_protocol
-        self.influxdb_database = influxdb_database
         self.grafana_template = grafana_template
         self.grafana_output = grafana_output
 
@@ -25,7 +24,6 @@ class Config:
         project = config['Project']['project']
         release_name = config['Project']['release_name']
         metrics_protocol = config['Metrics']['protocol']
-        influxdb_database = config['Metrics']['influxdb_database']
         grafana_template = config['Metrics']['grafana_template']
         grafana_output = config['Metrics']['grafana_output']
 
@@ -33,13 +31,12 @@ class Config:
             project,
             release_name,
             metrics_protocol,
-            influxdb_database,
             grafana_template,
             grafana_output
         )
 
 
-def run_command(command, print_command=True):
+def run_command(command, print_command=False):
     if print_command:
         print(f"$ {command}")
     result = subprocess.run(
@@ -59,7 +56,7 @@ def get_influxdb_creds(influxdb_name, namespace):
 
 def is_k8s_resource_in_state(resource, resource_name, namespace, state_jsonpath, expected_value):
     command = f"kubectl get {resource} {resource_name} -n {namespace} -o jsonpath='{state_jsonpath}\n'"
-    result = run_command(command, print_command=False)
+    result = run_command(command)
     return result.stdout.strip() == expected_value
 
 
