@@ -1,6 +1,5 @@
 import argparse
 import utils
-import time
 import json
 
 
@@ -76,11 +75,18 @@ def create_grafana_dashboard(protocol, grafana_uri, grafana_template, grafana_ou
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description="Read config file from --config argument")
+        description="Read config file from --config argument and install/uninstall using --uninstall flag")
     parser.add_argument('--config', type=str, required=True,
                         help="Path to the config file")
+    parser.add_argument('--uninstall', action='store_true',
+                        help="Use this flag to enable uninstall mode")
     args = parser.parse_args()
     config = utils.Config.from_file(args.config)
+
+    if args.uninstall:
+        print(f"[Uninstall from Project {config.project}]")
+        utils.run_command(f"helm uninstall human-detection -n {config.project}")
+        exit(0)
 
     print(f"[Install to Project {config.project}]")
 
