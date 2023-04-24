@@ -9,9 +9,9 @@ helm
 kubectl
 ```
 
-Change `project` in `config.ini`.
+Change settings in `config.ini`. Under most cases, you only need to change SDP project name `project`.
 
-Install demo
+Install demo on specified SDP project.
 ```
 $ bash ./install.sh
 ```
