@@ -8,13 +8,13 @@ spec:
   camera:
     address: "{{ $.Release.Name }}-rtsp-simulator.{{ $.Release.Namespace }}.svc.cluster.local"
     path: {{ .Values.global.recorderPipeline.path1 | quote }}
-    port: {{ .Values.global.rtspSimulator.port | quote }}
-    secret: {{ .Values.global.rtspSimulator.secret.name | quote }}
+    port: {{ .Values.global.camera.port | quote }}
+    secret: {{ .Values.global.camera.secret.name | quote }}
   pravega:
     stream: {{ .Values.global.recorderPipeline.stream1 | quote }}
     retentionPolicy:
-      retentionPolicyType: "days"
-      retentionDays: 3
+      retentionPolicyType: {{ .Values.global.recorderPipeline.rententionPolicyType | quote }}
+      retentionDays: {{ .Values.global.recorderPipeline.rententionDays }}
   env:
    - name: CAMERA_PROTOCOLS 
      value: "tcp"

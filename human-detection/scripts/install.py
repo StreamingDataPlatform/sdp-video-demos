@@ -113,18 +113,14 @@ if __name__ == '__main__':
     wait_until_camera_recorder_running("camera-recorder-2", config.project)
 
     print("\n[Install GStreamer Pipelines]")
-    influxdb_host, ingress_port = utils.get_k8s_service_local_address("project-metrics",
-                                                                      config.project)
-    influxdb_username, influxdb_password = utils.get_influxdb_creds('project-metrics-influxdb',
-                                                                    config.project)
     utils.run_command("helm upgrade --install human-detection ./chart" +
                       f" -n {config.project}" +
                       " --set stageTags.stage1=true" +
                       " --set stageTags.stage2=true" +
-                      " --set stageTags.stage3=true" +
-                      f" --set global.influxdb.host={influxdb_host}" +
-                      f" --set global.influxdb.username={influxdb_username}" +
-                      f" --set global.influxdb.password={influxdb_password}")
+                      " --set stageTags.stage3=true")
+                    #   f" --set global.influxdb.host={influxdb_host}" +
+                    #   f" --set global.influxdb.username={influxdb_username}" +
+                    #   f" --set global.influxdb.password={influxdb_password}")
     wait_until_gstreamer_pipeline_running("human-detection-1", config.project)
     wait_until_gstreamer_pipeline_running("human-detection-2", config.project)
 
@@ -132,6 +128,11 @@ if __name__ == '__main__':
     grafana_uri = utils.get_k8s_ingress_host(f"{config.release_name}-grafana",
                                              config.project)
     wait_until_host_resolvable(grafana_uri)
+    
+    influxdb_host, ingress_port = utils.get_k8s_service_local_address("project-metrics",
+                                                                      config.project)
+    influxdb_username, influxdb_password = utils.get_influxdb_creds('project-metrics-influxdb',
+                                                                    config.project)
     influxdb_uri = f"{influxdb_host}:{ingress_port}"
     create_grafana_datasource(config.metrics_protocol, grafana_uri, influxdb_uri,
                               "video_demo_db", influxdb_username, influxdb_password)

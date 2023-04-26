@@ -10,7 +10,7 @@ stageTags:
   stage2: false
   stage3: false
 global:
-  rtspSimulator:
+  camera:
     port: 8554
     videos: "/opt/videos/3660928.mp4;30;cam1,/opt/videos/test4.mp4;24;cam2"
     secret:
@@ -22,8 +22,8 @@ global:
     stream1: "camera1"
     path2: "/cam2"
     stream2: "camera2"
-  influxdb:
-    host: null
-    username: null
-    password: null
-    database: video_demo_db
+    rententionPolicyType: "days"
+    rententionDays: 3
+  inferencePipeline:
+    roi: "[{\"x\":600,\"y\":180,\"w\":600,\"h\":500}]"
+    influxdbDatabase: video_demo_db

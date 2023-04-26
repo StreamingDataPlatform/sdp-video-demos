@@ -21,9 +21,9 @@ spec:
         imagePullPolicy: {{ $.Values.images.rtspSimulator.pullPolicy | quote }}
         ports:
         - name: rtsp
-          containerPort: {{ $.Values.global.rtspSimulator.port }}
+          containerPort: {{ $.Values.global.camera.port }}
           protocol: TCP
         env:
         - name: VIDEOS
-          value: {{ $.Values.global.rtspSimulator.videos }}
+          value: {{ $.Values.global.camera.videos }}
 {{- end}}
