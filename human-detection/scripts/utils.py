@@ -9,32 +9,55 @@ import socket
 import re
 import time
 
-
 class Config:
-    def __init__(self, project, release_name, metrics_protocol, grafana_template, grafana_output):
+    def __init__(
+        self,
+        project,
+        release_name,
+        metrics_protocol,
+        grafana_template,
+        grafana_output,
+        deploy_simulated_camera,
+        deploy_recorder_pipeline,
+        deploy_inference_pipeline,
+        deploy_grafana_dashboard,
+    ):
         self.project = project
         self.release_name = release_name
         self.metrics_protocol = metrics_protocol
         self.grafana_template = grafana_template
         self.grafana_output = grafana_output
+        self.deploy_simulated_camera = deploy_simulated_camera
+        self.deploy_recorder_pipeline = deploy_recorder_pipeline
+        self.deploy_inference_pipeline = deploy_inference_pipeline
+        self.deploy_grafana_dashboard = deploy_grafana_dashboard
 
     @classmethod
     def from_file(cls, file_path):
         config = configparser.ConfigParser()
         config.read(file_path)
-        project = config['Project']['project']
-        release_name = config['Project']['release_name']
-        metrics_protocol = config['Metrics']['protocol']
-        grafana_template = config['Metrics']['grafana_template']
-        grafana_output = config['Metrics']['grafana_output']
+        project = config["Project"]["project"]
+        release_name = config["Project"]["release_name"]
+        metrics_protocol = config["Metrics"]["protocol"]
+        grafana_template = config["Metrics"]["grafana_template"]
+        grafana_output = config["Metrics"]["grafana_output"]
+        deploy_simulated_camera = config.getboolean("Components to deploy", "simulated_camera")
+        deploy_recorder_pipeline = config.getboolean("Components to deploy", "recorder_pipeline")
+        deploy_inference_pipeline = config.getboolean("Components to deploy", "inference_pipeline")
+        deploy_grafana_dashboard = config.getboolean("Components to deploy", "grafana_dashboard")
 
         return cls(
             project,
             release_name,
             metrics_protocol,
             grafana_template,
-            grafana_output
+            grafana_output,
+            deploy_simulated_camera,
+            deploy_recorder_pipeline,
+            deploy_inference_pipeline,
+            deploy_grafana_dashboard,
         )
+
 
 
 def run_command(command, print_command=True):

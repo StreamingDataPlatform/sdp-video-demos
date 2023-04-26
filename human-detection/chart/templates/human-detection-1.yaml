@@ -1,4 +1,4 @@
-{{- if .Values.stageTags.stage3 }}
+{{- if .Values.enabledComponents.inferencePipeline }}
 apiVersion: gstreamer.dellemc.com/v1alpha1
 kind: GStreamerPipeline
 metadata:
@@ -18,8 +18,10 @@ spec:
       value: "{{ $.Values.global.recorderPipeline.stream1 }}-infer"
     - name: RECOVERY_TABLE
       value: "{{ $.Values.global.recorderPipeline.stream1 }}-rec"
+    {{- if .Values.global.inferencePipeline.roi1 }}
     - name: ROI
-      value: {{ .Values.global.inferencePipeline.roi | quote }}
+      value: {{ .Values.global.inferencePipeline.roi1 | quote }}
+    {{- end }}
     - name: PRAVEGA_RETENTION_POLICY_TYPE
       value: "days"
     - name: PRAVEGA_RETENTION_DAYS

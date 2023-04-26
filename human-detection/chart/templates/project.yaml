@@ -1,4 +1,3 @@
-{{- if .Values.stageTags.stage1 }}
 apiVersion: nautilus.dellemc.com/v1alpha1
 kind: Project
 metadata:
@@ -18,4 +17,3 @@ spec:
           storage: 10Gi
       storageClassName: nfs
     reclaimPolicy: Delete
-{{- end}}

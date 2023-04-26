@@ -1,4 +1,4 @@
-{{- if .Values.stageTags.stage1 }}
+{{- if .Values.enabledComponents.simulatedCamera }}
 apiVersion: v1
 kind: Service
 metadata:

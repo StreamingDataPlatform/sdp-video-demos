@@ -1,4 +1,4 @@
-{{- if .Values.stageTags.stage1 }}
+{{- if .Values.enabledComponents.grafanaDashboard }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

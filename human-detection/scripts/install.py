@@ -75,7 +75,7 @@ def create_grafana_dashboard(protocol, grafana_uri, grafana_template, grafana_ou
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description="Read config file from --config argument and install/uninstall using --uninstall flag")
+        description="Installation script for Human Detection demo")
     parser.add_argument('--config', type=str, required=True,
                         help="Path to the config file")
     parser.add_argument('--uninstall', action='store_true',
@@ -88,72 +88,81 @@ if __name__ == '__main__':
         utils.run_command(f"helm uninstall human-detection -n {config.project}")
         exit(0)
 
-    print(f"[Install to Project {config.project}]")
+    print(f'''
+    Optional components to deploy:
+    Simulated Camera:         {config.deploy_simulated_camera}
+    Camera Recorder Pipeline: {config.deploy_recorder_pipeline}
+    Inference Pipeline:       {config.deploy_inference_pipeline}
+    Grafana Dashboard:        {config.deploy_grafana_dashboard}
+    ''')
 
-    print("\n[Install SDP Project, Simulated Cameras, Metrics services]")
+    print(f"[Install seleted components to project '{config.project}']")
     # create namespace if not exists
     utils.run_command("kubectl get namespace |" +
                       f" grep -q \"^{config.project}\" ||" +
                       f" kubectl create namespace {config.project}")
-    # install stage1
+    # install charts
     utils.run_command("helm upgrade --install human-detection ./chart" +
                       f" -n {config.project}" +
-                      " --set stageTags.stage1=true")
+                      " --set enabledComponents.simulatedCamera=" + 
+                      f"{config.deploy_simulated_camera}" +
+                      " --set enabledComponents.recorderPipeline=" + 
+                      f"{config.deploy_recorder_pipeline}" +
+                      " --set enabledComponents.inferencePipeline=" + 
+                      f"{config.deploy_inference_pipeline}" +
+                      " --set enabledComponents.grafanaDashboard=" + 
+                      f"{config.deploy_grafana_dashboard}")
+
     wait_until_project_ready(config.project)
-    # make sure video server is ready for playbacks in sdp
     wait_until_host_resolvable(
         utils.get_k8s_ingress_host("video", config.project))
-
-    print("\n[Install Camera Recorder Pipelines]")
-    utils.run_command("helm upgrade --install human-detection ./chart" +
-                      f" -n {config.project}" +
-                      " --set stageTags.stage1=true" +
-                      " --set stageTags.stage2=true")
-    wait_until_camera_recorder_running("camera-recorder-1", config.project)
-    wait_until_camera_recorder_running("camera-recorder-2", config.project)
-
-    print("\n[Install GStreamer Pipelines]")
-    utils.run_command("helm upgrade --install human-detection ./chart" +
-                      f" -n {config.project}" +
-                      " --set stageTags.stage1=true" +
-                      " --set stageTags.stage2=true" +
-                      " --set stageTags.stage3=true")
-                    #   f" --set global.influxdb.host={influxdb_host}" +
-                    #   f" --set global.influxdb.username={influxdb_username}" +
-                    #   f" --set global.influxdb.password={influxdb_password}")
-    wait_until_gstreamer_pipeline_running("human-detection-1", config.project)
-    wait_until_gstreamer_pipeline_running("human-detection-2", config.project)
-
-    print("\n[Add Grafana data source]")
-    grafana_uri = utils.get_k8s_ingress_host(f"{config.release_name}-grafana",
-                                             config.project)
-    wait_until_host_resolvable(grafana_uri)
     
-    influxdb_host, ingress_port = utils.get_k8s_service_local_address("project-metrics",
-                                                                      config.project)
-    influxdb_username, influxdb_password = utils.get_influxdb_creds('project-metrics-influxdb',
-                                                                    config.project)
-    influxdb_uri = f"{influxdb_host}:{ingress_port}"
-    create_grafana_datasource(config.metrics_protocol, grafana_uri, influxdb_uri,
-                              "video_demo_db", influxdb_username, influxdb_password)
+    if config.deploy_recorder_pipeline:
+        wait_until_camera_recorder_running("camera-recorder-1", config.project)
+        wait_until_camera_recorder_running("camera-recorder-2", config.project)
 
-    print("\n[Create Grafana dashboard]")
-    video_server_uri = utils.get_k8s_ingress_host(f"{config.release_name}-video-server",
-                                                  config.project)
-    wait_until_host_resolvable(video_server_uri)
-    grafana_variable_map = {
-        'video_server_uri': video_server_uri,
-        'namespace': config.project,
-        'protocol': config.metrics_protocol,
-    }
-    dashboard_url = create_grafana_dashboard(config.metrics_protocol, grafana_uri,
-                                             config.grafana_template, config.grafana_output,
-                                             grafana_variable_map)
+    if config.deploy_inference_pipeline:
+        wait_until_gstreamer_pipeline_running("human-detection-1", config.project)
+        wait_until_gstreamer_pipeline_running("human-detection-2", config.project)
+    
+    if config.deploy_grafana_dashboard:
+        print("\n[Add Grafana data source]")
+        grafana_uri = utils.get_k8s_ingress_host(f"{config.release_name}-grafana",
+                                                config.project)
+        wait_until_host_resolvable(grafana_uri)
+        
+        influxdb_host, ingress_port = utils.get_k8s_service_local_address("project-metrics",
+                                                                        config.project)
+        influxdb_username, influxdb_password = utils.get_influxdb_creds('project-metrics-influxdb',
+                                                                        config.project)
+        influxdb_uri = f"{influxdb_host}:{ingress_port}"
+        create_grafana_datasource(config.metrics_protocol, grafana_uri, influxdb_uri,
+                                "video_demo_db", influxdb_username, influxdb_password)
+
+        print("\n[Create Grafana dashboard]")
+        video_server_uri = utils.get_k8s_ingress_host(f"{config.release_name}-video-server",
+                                                    config.project)
+        wait_until_host_resolvable(video_server_uri)
+        grafana_variable_map = {
+            'video_server_uri': video_server_uri,
+            'namespace': config.project,
+            'protocol': config.metrics_protocol,
+        }
+        dashboard_url = create_grafana_dashboard(config.metrics_protocol, grafana_uri,
+                                                config.grafana_template, config.grafana_output,
+                                                grafana_variable_map)
+        
+    sdp_ui_ingress = utils.get_k8s_ingress_host("nautilus-ui", "nautilus-system")
 
     print("\nDone------------------------------------------------------------------")
 
-    print("\nTo Access Grafana Dashboard:")
-    print(
-        f"1. Use {config.metrics_protocol}://{video_server_uri}/scopes to verify video server access")
-    print(
-        f"2. Access the dashboard at {dashboard_url}. Default username and password are both 'admin'")
+    print("\nTo Access SDP UI:")
+    # enforce https by default
+    print(f"   Visit https://{sdp_ui_ingress}")
+
+    if config.deploy_grafana_dashboard:
+        print("\nTo Access Grafana Dashboard:")
+        print(
+            f"1. Use {config.metrics_protocol}://{video_server_uri}/scopes to verify video server access")
+        print(
+            f"2. Access the dashboard at {dashboard_url}. Default username and password are both 'admin'")

@@ -1,4 +1,4 @@
-{{- if .Values.stageTags.stage2 }}
+{{- if .Values.enabledComponents.recorderPipeline }}
 apiVersion: gstreamer.dellemc.com/v1alpha1
 kind: CameraRecorderPipeline
 metadata:

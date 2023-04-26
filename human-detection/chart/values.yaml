@@ -5,10 +5,12 @@ images:
   grafana:
     repository: "devops-repo.isus.emc.com:8116/nautilus/video-demos/grafana:latest"
     pullPolicy: "Always"
-stageTags:
-  stage1: false
-  stage2: false
-  stage3: false
+# flags used to control whether a component is enabled or disabled.
+enabledComponents:
+  simulatedCamera: True
+  recorderPipeline: True
+  inferencePipeline: True
+  grafanaDashboard: True
 global:
   camera:
     port: 8554
@@ -25,5 +27,6 @@ global:
     rententionPolicyType: "days"
     rententionDays: 3
   inferencePipeline:
-    roi: "[{\"x\":600,\"y\":180,\"w\":600,\"h\":500}]"
+    roi1: "[{\"x\":600,\"y\":180,\"w\":600,\"h\":500}]"
+    roi2: null
     influxdbDatabase: video_demo_db
