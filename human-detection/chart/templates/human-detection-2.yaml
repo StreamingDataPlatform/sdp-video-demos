@@ -23,23 +23,17 @@ spec:
       value: {{ .Values.global.inferencePipeline.roi2 | quote }}
     {{- end }}
     - name: PRAVEGA_RETENTION_POLICY_TYPE
-      value: "days"
+      value: {{ .Values.global.recorderPipeline.rententionPolicyType | quote }}
     - name: PRAVEGA_RETENTION_DAYS
-      value: "3"
+      value: {{ .Values.global.recorderPipeline.rententionPolicyDays | quote }}
     - name: INFLUXDB_HOST
       value: "project-metrics.{{ $.Release.Namespace }}.svc.cluster.local"
     - name: INFLUXDB_USERNAME
-      valueFrom:
-        secretKeyRef:
-          key: username
-          name: project-metrics-influxdb
+      value: {{ required "influxdb username is required" .Values.global.influxdb.username | quote }}
     - name: INFLUXDB_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          key: password
-          name: project-metrics-influxdb
+      value: {{ required "influxdb password is required" .Values.global.influxdb.password | quote }}
     - name: INFLUXDB_DATABASE
-      value: {{ .Values.global.inferencePipeline.influxdbDatabase | quote }}
+      value: {{ required "influxdb database is required" .Values.global.influxdb.database | quote }}
     - name: INFLUXDB_DEVICE
       value: "cam2"
   resources:

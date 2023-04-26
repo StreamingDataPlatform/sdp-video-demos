@@ -5,12 +5,12 @@ images:
   grafana:
     repository: "devops-repo.isus.emc.com:8116/nautilus/video-demos/grafana:latest"
     pullPolicy: "Always"
-# flags used to control whether a component is enabled or disabled.
+# Flags used to control whether a component is enabled or disabled
 enabledComponents:
-  simulatedCamera: True
-  recorderPipeline: True
-  inferencePipeline: True
-  grafanaDashboard: True
+  simulatedCamera: False
+  recorderPipeline: False
+  inferencePipeline: False
+  grafanaDashboard: False
 global:
   camera:
     port: 8554
@@ -29,4 +29,7 @@ global:
   inferencePipeline:
     roi1: "[{\"x\":600,\"y\":180,\"w\":600,\"h\":500}]"
     roi2: null
-    influxdbDatabase: video_demo_db
+  influxdb:
+    username: null
+    password: null
+    database: video_demo_db

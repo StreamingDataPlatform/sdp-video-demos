@@ -86,6 +86,7 @@ if __name__ == '__main__':
     if args.uninstall:
         print(f"[Uninstall from Project {config.project}]")
         utils.run_command(f"helm uninstall human-detection -n {config.project}")
+        utils.run_command(f"kubectl delete namespace {config.project}")
         exit(0)
 
     print(f'''
@@ -96,12 +97,20 @@ if __name__ == '__main__':
     Grafana Dashboard:        {config.deploy_grafana_dashboard}
     ''')
 
-    print(f"[Install seleted components to project '{config.project}']")
+    print(f"[Install project '{config.project}']")
     # create namespace if not exists
     utils.run_command("kubectl get namespace |" +
                       f" grep -q \"^{config.project}\" ||" +
                       f" kubectl create namespace {config.project}")
-    # install charts
+    # install project only
+    utils.run_command("helm upgrade --install human-detection ./chart" +
+                      f" -n {config.project}")
+    wait_until_project_ready(config.project)
+
+    print(f"\n[Install seleted components to project '{config.project}']")
+    # install other coponents
+    influxdb_username, influxdb_password = utils.get_influxdb_creds('project-metrics-influxdb',
+                                                                    config.project)
     utils.run_command("helm upgrade --install human-detection ./chart" +
                       f" -n {config.project}" +
                       " --set enabledComponents.simulatedCamera=" + 
@@ -111,9 +120,11 @@ if __name__ == '__main__':
                       " --set enabledComponents.inferencePipeline=" + 
                       f"{config.deploy_inference_pipeline}" +
                       " --set enabledComponents.grafanaDashboard=" + 
-                      f"{config.deploy_grafana_dashboard}")
-
-    wait_until_project_ready(config.project)
+                      f"{config.deploy_grafana_dashboard}" +
+                      " --set global.influxdb.username=" +
+                      f"{influxdb_username}" +
+                      " --set global.influxdb.password=" +
+                      f"{influxdb_password}")
     wait_until_host_resolvable(
         utils.get_k8s_ingress_host("video", config.project))
     
@@ -132,8 +143,6 @@ if __name__ == '__main__':
         wait_until_host_resolvable(grafana_uri)
         
         influxdb_host, ingress_port = utils.get_k8s_service_local_address("project-metrics",
-                                                                        config.project)
-        influxdb_username, influxdb_password = utils.get_influxdb_creds('project-metrics-influxdb',
                                                                         config.project)
         influxdb_uri = f"{influxdb_host}:{ingress_port}"
         create_grafana_datasource(config.metrics_protocol, grafana_uri, influxdb_uri,

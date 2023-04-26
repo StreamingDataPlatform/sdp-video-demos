@@ -6,8 +6,6 @@ spec:
   features:
     - name: pravegavideoserver
     - name: metrics
-  metrics:
-    enabled: false
   storage:
     persistentVolumeClaim:
       accessModes:
