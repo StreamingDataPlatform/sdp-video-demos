@@ -2,19 +2,31 @@
 Human detection inference demo on SDP
 
 ## Install
-In SDP UI, create a new project with `Metrics` and `Video Server` features. Update the project name in `config.ini - [Project] - namespace` with newly created project name.
-
-Install charts and set up Grafana using
+To ensure successful installation of the human detection inference demo, make sure following packages are installed:
 ```
-$ ./install.sh
+python3
+helm
+kubectl
 ```
-After finish install, setup camera recorder and inference pipeline in SDP Project UI.
-### Create Camera Secret
-RTSP cameras usually have basic auth enabled. Install script deployed simulated RTSP camera with the username-password pair of `admin:password`. In SDP, the camera recorder pipeline would read the secret which stores the username and password for auth.
 
-In SDP, make sure secret `admin-secret` exists in `Video - Camera Secrets`.
+Please review settings in [`config.ini`](./config.ini). In most cases, the only change needed is to update the SDP project name in the project field. For more information on customizing the installation, refer to the [Customize Installation](#customize-installation) section.
 
-### Create Camera Recorder Pipeline
+To install the demo with your configs, run
+```
+$ bash ./install.sh
+```
+
+## Customized Installation
+The installation can be customized by changing the configurations in the `config.ini` file. For example, if an existing RTSP camera is available, the user can set `simulated_camera = false` and configure the pipelines to use the address of the existing camera.
+
+Instead of deploying the Camera Secrets, Camera Recorder Pipelines, and Gstreamer Pipelines through the script, the user may choose to do so in the SDP UI. These can be found under the `Analytics - <Project> - Video` panel in Dell Streaming Data Platform. The reference values used in the script can be found in the [helm charts](./chart/).
+
+You may also refer to following sections for how to deploy the demo in UI,
+
+### Reference: Camera Secret
+For RTSP cameras, basic authentication is usually enabled. The installation script deploys a simulated RTSP camera with the username-password pair of `admin:password`. In SDP, the camera recorder pipeline reads the secret that stores the username and password for authentication.
+
+### Reference: Camera Recorder Pipeline
 | Field                  | Value                                                        |
 | ---------------------- | ------------------------------------------------------------ |
 | Host Address           | <release_name>-rtsp-simulator.\<namespace>.svc.cluster.local |
@@ -27,7 +39,7 @@ In SDP, make sure secret `admin-secret` exists in `Video - Camera Secrets`.
 | Environment Properties | CAMERA_PROTOCOLS=tcp                                         |
 
 
-### Create GStreamer Pipelines
+### Reference: GStreamer Pipelines
 | Field                    | Value                                                                         |
 | ------------------------ | ----------------------------------------------------------------------------- |
 | Name                     | human-detection-1                                                             |
@@ -52,5 +64,8 @@ In SDP, make sure secret `admin-secret` exists in `Video - Camera Secrets`.
 | Resource Limits CPU      | 12                                                                            |
 | Resource Limits Memory   | 10G                                                                           |
 
-
+## Uninstall
+To uninstall the demo as well as the SDP project demo is running on, run:
+```
+$ bash ./uninstall.sh
 ```

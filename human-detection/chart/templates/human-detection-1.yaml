@@ -1,0 +1,48 @@
+{{- if .Values.enabledComponents.inferencePipeline }}
+apiVersion: gstreamer.dellemc.com/v1alpha1
+kind: GStreamerPipeline
+metadata:
+  name: "human-detection-1"
+spec:
+  state: Running
+  image: devops-repo.isus.emc.com:8116/nautilus/video-demos/dlstreamer-pipeline:latest
+  pullPolicy: Always
+  livenessProbe:
+    enabled: false
+  env:
+    - name: ENTRYPOINT
+      value: "/opt/human-detection/human-detection.py"
+    - name: INPUT_STREAM
+      value: {{ .Values.global.recorderPipeline.stream1 | quote }}
+    - name: OUTPUT_VIDEO_STREAM
+      value: "{{ $.Values.global.recorderPipeline.stream1 }}-infer"
+    - name: RECOVERY_TABLE
+      value: "{{ $.Values.global.recorderPipeline.stream1 }}-rec"
+    {{- if .Values.global.inferencePipeline.roi1 }}
+    - name: ROI
+      value: {{ .Values.global.inferencePipeline.roi1 | quote }}
+    {{- end }}
+    - name: PRAVEGA_RETENTION_POLICY_TYPE
+      value: {{ .Values.global.recorderPipeline.rententionPolicyType | quote }}
+    - name: PRAVEGA_RETENTION_DAYS
+      value: {{ .Values.global.recorderPipeline.rententionPolicyDays | quote }}
+    - name: INFLUXDB_HOST
+      value: "project-metrics.{{ $.Release.Namespace }}.svc.cluster.local"
+    - name: INFLUXDB_USERNAME
+      value: {{ required "influxdb username is required" .Values.global.influxdb.username | quote }}
+    - name: INFLUXDB_PASSWORD
+      value: {{ required "influxdb password is required" .Values.global.influxdb.password | quote }}
+    - name: INFLUXDB_DATABASE
+      value: {{ required "influxdb database is required" .Values.global.influxdb.database | quote }}
+    - name: INFLUXDB_DEVICE
+      value: "cam1"
+  resources:
+    requests:
+      cpu: "10"
+      memory: 4G
+    limits:
+      cpu: "12"
+      memory: 10G
+  livenessProbe:
+    enabled: False
+{{- end}}

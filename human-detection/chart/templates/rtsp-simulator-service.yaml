@@ -1,3 +1,4 @@
+{{- if .Values.enabledComponents.simulatedCamera }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -5,9 +6,10 @@ metadata:
 spec:
   ports:
   - name: rtsp
-    port: {{ $.Values.global.camera.rtspPort }}
-    targetPort: {{ $.Values.global.camera.rtspPort }}
+    port: {{ $.Values.global.camera.port }}
+    targetPort: {{ $.Values.global.camera.port }}
     protocol: TCP
   selector:
     release: {{ $.Release.Name }}-rtsp-simulator
   type: ClusterIP
+{{- end}}

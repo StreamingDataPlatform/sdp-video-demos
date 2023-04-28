@@ -1,0 +1,17 @@
+apiVersion: nautilus.dellemc.com/v1alpha1
+kind: Project
+metadata:
+  name: {{ $.Release.Namespace }}
+spec:
+  features:
+    - name: pravegavideoserver
+    - name: metrics
+  storage:
+    persistentVolumeClaim:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: nfs
+    reclaimPolicy: Delete

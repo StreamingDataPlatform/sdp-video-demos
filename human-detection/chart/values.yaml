@@ -5,11 +5,31 @@ images:
   grafana:
     repository: "devops-repo.isus.emc.com:8116/nautilus/video-demos/grafana:latest"
     pullPolicy: "Always"
+# Flags used to control whether a component is enabled or disabled
+enabledComponents:
+  simulatedCamera: False
+  recorderPipeline: False
+  inferencePipeline: False
+  grafanaDashboard: False
 global:
   camera:
-    rtspPort: 8554
+    port: 8554
     videos: "/opt/videos/3660928.mp4;30;cam1,/opt/videos/test4.mp4;24;cam2"
     secret:
-      name: "admin-secret"
+      name: "simulator-secret"
       username: "admin"
       password: "password"
+  recorderPipeline:
+    path1: "/cam1"
+    stream1: "camera1"
+    path2: "/cam2"
+    stream2: "camera2"
+    rententionPolicyType: "days"
+    rententionDays: 3
+  inferencePipeline:
+    roi1: "[{\"x\":600,\"y\":180,\"w\":600,\"h\":500}]"
+    roi2: null
+  influxdb:
+    username: null
+    password: null
+    database: video_demo_db
