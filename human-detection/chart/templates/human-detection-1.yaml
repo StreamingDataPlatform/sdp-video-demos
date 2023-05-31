@@ -25,7 +25,7 @@ spec:
     - name: PRAVEGA_RETENTION_POLICY_TYPE
       value: {{ .Values.global.recorderPipeline.rententionPolicyType | quote }}
     - name: PRAVEGA_RETENTION_DAYS
-      value: {{ .Values.global.recorderPipeline.rententionPolicyDays | quote }}
+      value: {{ .Values.global.recorderPipeline.rententionDays | quote }}
     - name: INFLUXDB_HOST
       value: "project-metrics.{{ $.Release.Namespace }}.svc.cluster.local"
     - name: INFLUXDB_USERNAME
