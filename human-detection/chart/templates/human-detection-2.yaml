@@ -5,8 +5,8 @@ metadata:
   name: "human-detection-2"
 spec:
   state: Running
-  image: devops-repo.isus.emc.com:8116/nautilus/video-demos/dlstreamer-pipeline:latest
-  pullPolicy: Always
+  image: {{ $.Values.images.humanDetection.repository | quote }}
+  imagePullPolicy: {{ $.Values.images.humanDetection.pullPolicy | quote }}
   livenessProbe:
     enabled: false
   env:

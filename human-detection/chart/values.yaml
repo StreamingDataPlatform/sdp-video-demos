@@ -5,6 +5,9 @@ images:
   grafana:
     repository: "devops-repo.isus.emc.com:8116/nautilus/video-demos/grafana:latest"
     pullPolicy: "Always"
+  humanDetection:
+    repository: "devops-repo.isus.emc.com:8116/nautilus/video-demos/dlstreamer-pipeline:latest"
+    pullPolicy: "Always"
 # Flags used to control whether a component is enabled or disabled
 enabledComponents:
   simulatedCamera: False
