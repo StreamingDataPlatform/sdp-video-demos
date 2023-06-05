@@ -6,10 +6,10 @@ metadata:
 spec:
   state: Running
   camera:
-    address: "{{ $.Release.Name }}-rtsp-simulator.{{ $.Release.Namespace }}.svc.cluster.local"
+    address: {{ .Values.global.recorderPipeline.address | default "{{ $.Release.Name }}-rtsp-simulator.{{ $.Release.Namespace }}.svc.cluster.local" | quote }}
     path: {{ .Values.global.recorderPipeline.path2 | quote }}
-    port: {{ .Values.global.camera.port | quote }}
-    secret: {{ .Values.global.camera.secret.name | quote }}
+    port: {{ .Values.global.recorderPipeline.port | quote }}
+    secret: {{ .Values.global.recorderPipeline.secret.name | quote }}
   pravega:
     stream: {{ .Values.global.recorderPipeline.stream2 | quote }}
     retentionPolicy:
