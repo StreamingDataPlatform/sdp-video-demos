@@ -19,7 +19,7 @@ $ bash ./install.sh
 ## Customized Installation
 The installation can be customized by changing the configurations in the `config.ini` file. For example, if an existing RTSP camera is available, the user can set `simulated_camera = false` and configure the pipelines to use the address of the existing camera.
 
-Instead of deploying the Camera Secrets, Camera Recorder Pipelines, and Gstreamer Pipelines through the script, the user may choose to do so in the SDP UI. These can be found under the `Analytics - <Project> - Video` panel in Dell Streaming Data Platform. The reference values used in the script can be found in the [helm charts](./chart/).
+Instead of deploying the Camera Secrets, Camera Recorder Pipelines, and GStreamer Pipelines through the script, the user may choose to do so in the SDP UI. These can be found under the `Analytics - <Project> - Video` panel in Dell Streaming Data Platform. The reference values used in the script can be found in the [helm charts](./chart/).
 
 You may also refer to following sections for how to deploy the demo in UI,
 
@@ -43,7 +43,7 @@ For RTSP cameras, basic authentication is usually enabled. The installation scri
 | Field                    | Value                                                                         |
 | ------------------------ | ----------------------------------------------------------------------------- |
 | Name                     | human-detection-1                                                             |
-| Image                    | devops-repo.isus.emc.com:8116/nautilus/video-demos/dlstreamer-pipeline:latest |
+| Image                    | ghcr.io/streamingdataplatform/sdp-video-demos-dlstreamer-pipeline:latest      |
 | Replicas                 | 1                                                                             |
 | Pull Policy              | Always                                                                        |
 | Liveness Probe           | False                                                                         |
@@ -53,11 +53,11 @@ For RTSP cameras, basic authentication is usually enabled. The installation scri
 | Environment Properties   | ROI=[{"x":600,"y":180,"w":600,"h":500}]                                       |
 | Environment Properties   | PRAVEGA_RETENTION_POLICY_TYPE=days                                            |
 | Environment Properties   | PRAVEGA_RETENTION_DAYS=3                                                      |
-| Environment Properties   | INFLUXDB_HOST=project-metrics.\<namespace>.svc.cluster.local                  |
+| Environment Properties   | INFLUXDB_HOST=project-metrics.<namespace>.svc.cluster.local                   |
 | Environment Properties   | INFLUXDB_DEVICE=cam1                                                          |
 | Environment Properties   | INFLUXDB_USERNAME=<influxdb_username>                                         |
 | Environment Properties   | INFLUXDB_PASSWORD=<influxdb_password>                                         |
-| Environment Properties   | INFLUXDB_DATABASE=foit                                                        |
+| Environment Properties   | INFLUXDB_DATABASE=video_demo_db                                               |
 | Environment Properties   | ENTRYPOINT=/opt/human-detection/human-detection.py                            |
 | Resource Requests CPU    | 8                                                                             |
 | Resource Requests Memory | 6G                                                                            |
